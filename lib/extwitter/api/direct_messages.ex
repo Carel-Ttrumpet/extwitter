@@ -39,7 +39,6 @@ defmodule ExTwitter.API.DirectMessages do
 
   def new_direct_message_with_quick_replies(twitter_id, text, quick_replies \\ []) do
     message_body = generate_message_body(twitter_id, text)
-                    |> add_quick_replies(quick_replies)
                     |> Poison.encode!
     Logger.warn "Posting message body: #{inspect message_body}"
     request_with_body(:post, "1.1/direct_messages/events/new.json", message_body)
