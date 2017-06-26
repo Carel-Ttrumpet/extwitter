@@ -1,4 +1,5 @@
 defmodule ExTwitter.API.Base do
+  require Logger
   @moduledoc """
   Provides basic and common functionalities for Twitter API.
   """
