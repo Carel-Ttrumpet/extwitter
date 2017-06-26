@@ -14,6 +14,10 @@ defmodule ExTwitter.API.Base do
     do_request(method, request_url(path), params)
   end
 
+  def request_with_body(method, path, body \\ []) do
+    do_request_with_body(method, request_url(path), body)
+  end
+
   @doc """
   Send request to the upload.twitter.com server.
   """
@@ -25,6 +29,18 @@ defmodule ExTwitter.API.Base do
     oauth = ExTwitter.Config.get_tuples |> verify_params
     Logger.warn "Twitter request: #{inspect method}, url: #{inspect url}, params: #{inspect params}"
     response = ExTwitter.OAuth.request(method, url, params,
+      oauth[:consumer_key], oauth[:consumer_secret], oauth[:access_token], oauth[:access_token_secret])
+    IO.inspect response
+    case response do
+      {:error, reason} -> raise(ExTwitter.ConnectionError, reason: reason)
+      r -> r |> parse_result
+    end
+  end
+
+  defp do_request_with_body(method, url, body) do
+    oauth = ExTwitter.Config.get_tuples |> verify_params
+    Logger.warn "Twitter request with body: #{inspect method}, url: #{inspect url}, params: #{inspect body}"
+    response = ExTwitter.OAuth.request_with_body(method, url, body,
       oauth[:consumer_key], oauth[:consumer_secret], oauth[:access_token], oauth[:access_token_secret])
     IO.inspect response
     case response do

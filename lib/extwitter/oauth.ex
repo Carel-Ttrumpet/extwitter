@@ -17,6 +17,10 @@ defmodule ExTwitter.OAuth do
     oauth_post(url, params, consumer_key, consumer_secret, access_token, access_token_secret, [])
   end
 
+  def request_with_body(:post, url, body, consumer_key, consumer_secret, access_token, access_token_secret) do
+    oauth_post_with_body(url, body, consumer_key, consumer_secret, access_token, access_token_secret, [])
+  end
+
   @doc """
   Send async request with get method.
   """
@@ -44,6 +48,13 @@ defmodule ExTwitter.OAuth do
       "post", url, params, consumer_key, consumer_secret, access_token, access_token_secret)
     encoded_params = URI.encode_query(signed_params)
     request = {to_char_list(url), [], 'application/x-www-form-urlencoded', encoded_params}
+    send_httpc_request(:post, request, options)
+  end
+
+  def oauth_post_with_body(url, body, consumer_key, consumer_secret, access_token, access_token_secret, options) do
+    signed_params = get_signed_params("post", url, [], consumer_key, consumer_secret, access_token, access_token_secret)
+    {header, req_params} = OAuther.header(signed_params)
+    request = {to_charlist(url), [header], 'application/json', body}
     send_httpc_request(:post, request, options)
   end
 

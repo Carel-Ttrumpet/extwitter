@@ -36,4 +36,43 @@ defmodule ExTwitter.API.DirectMessages do
     request(:post, "1.1/direct_messages/new.json", params)
     |> ExTwitter.Parser.parse_direct_message
   end
+
+  def new_direct_message_with_quick_replies(twitter_id, text, quick_replies \\ []) do
+    message_body = generate_message_body(twitter_id, text)
+                    |> add_quick_replies(quick_replies)
+                    |> Poison.encode!
+    request(:post, "1.1/direct_messages/events/new.json", message_body)
+    |> ExTwitter.Parser.parse_direct_message
+  end
+
+  def generate_message_body(twitter_id, text) do
+    %{
+      "event" => %{
+        "type" => "message_create",
+        "message_create" => %{
+          "target" => %{
+            "recipient_id" => twitter_id
+          },
+          "message_data" => %{
+            "text" => text
+          }
+        }
+      }
+    }
+  end
+
+  def add_quick_replies(message, quick_replies) do
+    if length(quick_replies) > 0 do
+      Map.put(message["event"]["message_create"], "quick_reply", quick_reply_map(quick_replies))
+    end
+  end
+
+  def quick_reply_map(quick_replies) do
+    %{
+        "type" => "options",
+        "options" => Enum.map(quick_replies, fn(reply) -> %{"label" => reply, "metadata" => reply} end)
+      }
+  end
 end
+
+
