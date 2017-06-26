@@ -28,8 +28,10 @@ defmodule ExTwitter.API.DirectMessages do
     |> ExTwitter.Parser.parse_direct_message
   end
 
-  def new_direct_message(id_or_screen_name, text) do
-    params = ExTwitter.Parser.parse_request_params(get_id_option(id_or_screen_name) ++ [text: text])
+  # Additional options in the form of a keyword list can be added.
+  # e.g [quick_reply: %{"type" => "options", "options" => [%{"label" => "Red bird", "description" => "Red bird description", "metadata" => "ext_id_1"}] }]
+  def new_direct_message(id_or_screen_name, text, additional_options \\ []) do
+    params = ExTwitter.Parser.parse_request_params(get_id_option(id_or_screen_name) ++ [text: text] ++ additional_options)
     request(:post, "1.1/direct_messages/new.json", params)
     |> ExTwitter.Parser.parse_direct_message
   end
