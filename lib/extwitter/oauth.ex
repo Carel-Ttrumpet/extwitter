@@ -58,11 +58,13 @@ defmodule ExTwitter.OAuth do
     header_key = to_charlist(header_key)
     header = {header_key, header_value}
     request = {to_charlist(url), [header], 'application/json', body}
+    Logger.warn "Request: #{inspect request}"
     send_httpc_request(:post, request, options)
   end
 
   def send_httpc_request(method, request, options) do
-    :httpc.request(method, request, [{:autoredirect, false}] ++ proxy_option(), options)
+    result = :httpc.request(method, request, [{:autoredirect, false}] ++ proxy_option(), options)
+    Logger.warn "Twitter result: #{inspect result}"
   end
 
   defp get_signed_params(method, url, params, consumer_key, consumer_secret, access_token, access_token_secret) do
