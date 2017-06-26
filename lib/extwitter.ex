@@ -648,6 +648,9 @@ defmodule ExTwitter do
   @spec new_direct_message(String.t | Integer, String.t, list()) :: ExTwitter.Model.DirectMessage.t
   defdelegate new_direct_message(id_or_screen_name, text, additional_options \\ []), to: ExTwitter.API.DirectMessages
 
+  @spec new_direct_message(String.t | Integer, String.t, list()) :: ExTwitter.Model.DirectMessage.t
+  defdelegate new_direct_message_with_quick_replies(twitter_id, text, quick_replies \\ []), to: ExTwitter.API.DirectMessages
+
   @doc """
   POST direct_messages/destroy/:id
 
