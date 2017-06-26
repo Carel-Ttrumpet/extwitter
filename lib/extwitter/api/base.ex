@@ -23,7 +23,7 @@ defmodule ExTwitter.API.Base do
 
   defp do_request(method, url, params) do
     oauth = ExTwitter.Config.get_tuples |> verify_params
-    Logger.warn "Twitter request: #{inspect method}, url: #{inspect url}, params: #{params}"
+    Logger.warn "Twitter request: #{inspect method}, url: #{inspect url}, params: #{inspect params}"
     response = ExTwitter.OAuth.request(method, url, params,
       oauth[:consumer_key], oauth[:consumer_secret], oauth[:access_token], oauth[:access_token_secret])
     IO.inspect response
