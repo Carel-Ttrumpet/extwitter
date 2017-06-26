@@ -54,7 +54,9 @@ defmodule ExTwitter.OAuth do
   def oauth_post_with_body(url, body, consumer_key, consumer_secret, access_token, access_token_secret, options) do
     signed_params = get_signed_params("post", url, [], consumer_key, consumer_secret, access_token, access_token_secret)
     {header, req_params} = OAuther.header(signed_params)
-    header = to_charlist(header)
+    {header_key, header_value} = header
+    header_key = to_charlist(header_key)
+    header = {header_key, header_value}
     request = {to_charlist(url), [header], 'application/json', body}
     send_httpc_request(:post, request, options)
   end
