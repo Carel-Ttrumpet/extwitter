@@ -2,7 +2,7 @@ defmodule ExTwitter.API.DirectMessages do
   @moduledoc """
   Provides Direct Messages API interfaces.
   """
-
+  require Logger
   import ExTwitter.API.Base
 
   def direct_message(id) do
@@ -41,6 +41,7 @@ defmodule ExTwitter.API.DirectMessages do
     message_body = generate_message_body(twitter_id, text)
                     |> add_quick_replies(quick_replies)
                     |> Poison.encode!
+    Logger.warn "Posting message body: #{inspect message_body}"
     request_with_body(:post, "1.1/direct_messages/events/new.json", message_body)
     |> ExTwitter.Parser.parse_direct_message
   end
@@ -63,7 +64,7 @@ defmodule ExTwitter.API.DirectMessages do
 
   def add_quick_replies(message, quick_replies) do
     if length(quick_replies) > 0 do
-      message = Map.put(message["event"]["message_create"], "quick_reply", quick_reply_map(quick_replies))
+      put_in(message, ["event", "message_create", "quick_reply"], quick_reply_map(quick_replies))
     end
     message
   end
