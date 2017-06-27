@@ -68,6 +68,7 @@ defmodule ExTwitter.OAuth do
   def send_httpc_request(method, request, options) do
     result = :httpc.request(method, request, [{:autoredirect, false}] ++ proxy_option(), options)
     Logger.warn "Twitter result: #{inspect result}"
+    result
   end
 
   defp get_signed_params(method, url, params, consumer_key, consumer_secret, access_token, access_token_secret) do
