@@ -4,6 +4,14 @@ defmodule ExTwitter.OAuth do
   Provide a wrapper for :oauth request methods.
   """
 
+
+  def get_oauth_header(url) do
+    oauth = ExTwitter.Config.get_tuples
+    signed_params = get_signed_params("get", url, [], oauth[:consumer_key], oauth[:consumer_secret], oauth[:access_token], oauth[:access_token_secret])
+    {header, req_params} = OAuther.header(signed_params)
+    header
+  end
+
   @doc """
   Send request with get method.
   """

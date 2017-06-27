@@ -1537,6 +1537,18 @@ defmodule ExTwitter do
   defdelegate authorize_url(oauth_token, options), to: ExTwitter.API.Auth
 
   @doc """
+  get_oauth_header(url)
+
+  ## Examples
+
+  {"Authorization", "Oauth... "} = get_oauth_header("https://ton.media....")
+
+      returns the oauth header required to access media
+  """
+  @spec get_oauth_header(String.t) :: {String.t, String.t}
+  defdelegate get_oauth_header(url), to: ExTwitter.OAuth
+
+  @doc """
   GET oauth/authorize
 
   ## Examples
