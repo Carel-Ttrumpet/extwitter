@@ -45,6 +45,10 @@ defmodule ExTwitter.API.DirectMessages do
     request_with_body(:post, "1.1/direct_messages/events/new.json", message_body)
   end
 
+  def get_image(url) do
+    request(:get, url)
+  end
+
   def generate_message_body(twitter_id, text) do
     %{
       "event" => %{
