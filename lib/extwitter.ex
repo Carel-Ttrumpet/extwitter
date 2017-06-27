@@ -1548,7 +1548,7 @@ defmodule ExTwitter do
   @spec get_oauth_header(String.t) :: {String.t, String.t}
   defdelegate get_oauth_header(url), to: ExTwitter.OAuth
 
-  defdelegate get_image(url), to ExTwitter.API.DirectMessages
+  defdelegate get_image(url), to: ExTwitter.API.DirectMessages
   @doc """
   GET oauth/authorize
 
