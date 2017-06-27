@@ -55,12 +55,13 @@ defmodule ExTwitter.OAuth do
   def oauth_post_with_body(url, body, consumer_key, consumer_secret, access_token, access_token_secret, options) do
     signed_params = get_signed_params("post", url, [], consumer_key, consumer_secret, access_token, access_token_secret)
     {header, req_params} = OAuther.header(signed_params)
-    {header_key, header_value} = header
-    header_key = to_charlist(header_key)
-    header = {header_key, header_value}
-    request = {to_charlist(url), [header], 'application/json', body}
+    # {header_key, header_value} = header
+    # header_key = to_charlist(header_key)
+    # header = {header_key, header_value}
+    # request = {to_charlist(url), [header], 'application/json', body}
     Logger.warn "Request: #{inspect request}"
-    send_httpc_request(:post, request, options)
+    # send_httpc_request(:post, request, options)
+    HTTPoison.post(url, json, [header], [connect_timeout: 50000, recv_timeout: 50000, timeout: 50000])
   end
 
   def send_httpc_request(method, request, options) do
