@@ -59,9 +59,9 @@ defmodule ExTwitter.OAuth do
     # header_key = to_charlist(header_key)
     # header = {header_key, header_value}
     # request = {to_charlist(url), [header], 'application/json', body}
-    Logger.warn "Request: #{inspect request}"
+    # Logger.warn "Request: #{inspect request}"
     # send_httpc_request(:post, request, options)
-    result = HTTPoison.post(url, json, [header], [connect_timeout: 50000, recv_timeout: 50000, timeout: 50000])
+    result = HTTPoison.post(url, body, [header], [connect_timeout: 50000, recv_timeout: 50000, timeout: 50000])
     Logger.warn "Post result: #{inspect result}"
   end
 
