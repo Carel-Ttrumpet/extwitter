@@ -64,7 +64,7 @@ defmodule ExTwitter.API.DirectMessages do
 
   def add_quick_replies(message, quick_replies) do
     if length(quick_replies) > 0 do
-      message = put_in(message, ["event", "message_create", "quick_reply"], quick_reply_map(quick_replies))
+      message = put_in(message, ["event", "message_data", "quick_reply"], quick_reply_map(quick_replies))
     end
     message
   end
