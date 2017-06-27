@@ -43,7 +43,6 @@ defmodule ExTwitter.API.DirectMessages do
                     |> Poison.encode!
     Logger.warn "Posting message body: #{inspect message_body}"
     request_with_body(:post, "1.1/direct_messages/events/new.json", message_body)
-    |> ExTwitter.Parser.parse_direct_message
   end
 
   def generate_message_body(twitter_id, text) do
