@@ -14,6 +14,10 @@ defmodule ExTwitter.API.Base do
     do_request(method, request_url(path), params)
   end
 
+  def ton_request(method, path, params \\ []) do
+    do_request(method, ton_request_url(path), params)
+  end
+
   def request_with_body(method, path, body \\ []) do
     do_request_with_body(method, request_url(path), body)
   end
@@ -63,6 +67,10 @@ defmodule ExTwitter.API.Base do
       true ->
         [screen_name: id]
     end
+  end
+
+  def ton_request_url(path) do
+    "https://ton.twitter.com/#{path}"
   end
 
   def request_url(path) do
