@@ -16,7 +16,7 @@ defmodule ExTwitter.API.Base do
 
   def ton_request(method, path, params \\ []) do
     oauth = ExTwitter.Config.get_tuples |> verify_params
-    response = ExTwitter.OAuth.request( method, url, params,
+    response = ExTwitter.OAuth.request( method, ton_request_url(path), params,
                                         oauth[:consumer_key],
                                         oauth[:consumer_secret],
                                         oauth[:access_token],
