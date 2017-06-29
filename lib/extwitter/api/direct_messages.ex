@@ -37,9 +37,14 @@ defmodule ExTwitter.API.DirectMessages do
     |> ExTwitter.Parser.parse_direct_message
   end
 
-  def new_direct_message_with_quick_replies(twitter_id, text, quick_replies \\ []) do
+  def new_direct_message_with_quick_replies(twitter_id, text, media_url, quick_replies \\ []) do
+    if media_url != "" do
+      upload_media(media_url)
+    end
+
     message_body = generate_message_body(twitter_id, text)
                     |> add_quick_replies(quick_replies)
+                    |> add_media(media_url)
                     |> Poison.encode!
     Logger.warn "Posting message body: #{inspect message_body}"
     request_with_body(:post, "1.1/direct_messages/events/new.json", message_body)
@@ -63,6 +68,10 @@ defmodule ExTwitter.API.DirectMessages do
         }
       }
     }
+  end
+
+  def add_media(message, media_url) do
+    message
   end
 
   def add_quick_replies(message, quick_replies) do

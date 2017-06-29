@@ -72,6 +72,14 @@ defmodule ExTwitter.OAuth do
     {:ok, {response, response.headers, response.body}}
   end
 
+  def multipart_upload(media_url, consumer_key, consumer_secret, access_token, access_token_secret) do
+    signed_params = get_signed_params("post", media_url, [], consumer_key, consumer_secret, access_token, access_token_secret)
+    {header, req_params} = OAuther.header(signed_params)
+    result = HTTPoison.post!("https://upload.twitter.com/1.1/media/upload.json", {:multipart, [header, {:file, "/home/ttrumpet/Desktop/charts_1.png"}]})
+
+    Logger.warn "Multipart upload post result: #{inspect result}"
+  end
+
   def send_httpc_request(method, request, options) do
     result = :httpc.request(method, request, [{:autoredirect, false}] ++ proxy_option(), options)
     Logger.warn "Twitter result: #{inspect result}"

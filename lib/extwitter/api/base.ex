@@ -23,6 +23,15 @@ defmodule ExTwitter.API.Base do
                                         oauth[:access_token_secret])
   end
 
+  def upload_media(media_url) do
+    oauth = ExTwitter.Config.get_tuples |> verify_params
+    response = ExTwitter.OAuth.multipart_upload(media_url,
+                                          oauth[:consumer_key],
+                                          oauth[:consumer_secret],
+                                          oauth[:access_token],
+                                          oauth[:access_token_secret])
+  end
+
   def request_with_body(method, path, body \\ []) do
     do_request_with_body(method, request_url(path), body)
   end
