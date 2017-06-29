@@ -37,7 +37,7 @@ defmodule ExTwitter.API.DirectMessages do
     |> ExTwitter.Parser.parse_direct_message
   end
 
-  def new_direct_message_with_quick_replies(twitter_id, text, media_url, content_type, quick_replies \\ []) do
+  def new_direct_message_with_quick_replies(twitter_id, text, content_type, media_url, quick_replies \\ []) do
     if media_url != "" do
       path = download_media media_url
       upload_media media_url, content_type, path
