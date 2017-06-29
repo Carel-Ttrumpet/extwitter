@@ -72,13 +72,13 @@ defmodule ExTwitter.OAuth do
     {:ok, {response, response.headers, response.body}}
   end
 
-  def multipart_upload(media_url, path, consumer_key, consumer_secret, access_token, access_token_secret) do
+  def multipart_upload(media_url, path, content_type, consumer_key, consumer_secret, access_token, access_token_secret) do
     signed_params = get_signed_params("post", media_url, [], consumer_key, consumer_secret, access_token, access_token_secret)
     {header, req_params} = OAuther.header(signed_params)
     %{size: size} = File.stat! path
     result = HTTPoison.post!("https://upload.twitter.com/1.1/media/upload.json",
                              {:multipart,
-                              [ {:file, path}],
+                              [ {:file, path},
                                 {"total_bytes", size},
                                 {"command", "INIT"},
                                 {"media_type", content_type},
