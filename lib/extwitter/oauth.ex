@@ -76,6 +76,7 @@ defmodule ExTwitter.OAuth do
     signed_params = get_signed_params("post", media_url, [], consumer_key, consumer_secret, access_token, access_token_secret)
     {header, req_params} = OAuther.header(signed_params)
     %{size: size} = File.stat! path
+    Logger.warn "Size: #{inspect size}"
     result = HTTPoison.post!("https://upload.twitter.com/1.1/media/upload.json",
                              {:multipart,
                               [ {:file, path},
