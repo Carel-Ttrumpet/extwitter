@@ -73,6 +73,7 @@ defmodule ExTwitter.API.DirectMessages do
   end
 
   def download_media(media_url) do
+    Logger.warn "Media url in direct messages: #{inspect media_url}"
     %HTTPoison.Response{body: body} = HTTPoison.get!(media_url)
     path = "/tmp/" <> random_string(8) <> ".png"
     File.write!(path, body)
