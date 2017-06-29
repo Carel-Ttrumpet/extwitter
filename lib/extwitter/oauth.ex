@@ -76,14 +76,17 @@ defmodule ExTwitter.OAuth do
     signed_params = get_signed_params("post", media_url, [], consumer_key, consumer_secret, access_token, access_token_secret)
     {header, req_params} = OAuther.header(signed_params)
     %{size: size} = File.stat! path
+    name = String.split(path, "/") |> List.last
     Logger.warn "Size: #{inspect size}"
-    result = HTTPoison.post!("https://upload.twitter.com/1.1/media/upload.json",
+
+    result = HTTPoison.post!(
+      "https://upload.twitter.com/1.1/media/upload.json?"
+                            <> "total_bytes=" <> Integer.to_string(size)
+                            <> "&command=INIT"
+                            <> "&media_type=" <> content_type
+                            <> "&Name=" <> name,
                              {:multipart,
-                              [ {:file, path},
-                                {"total_bytes", Integer.to_string(size)},
-                                {"command", "INIT"},
-                                {"media_type", content_type},
-                                {"name", String.split(path, "/") |> List.last}]}, [header])
+                              [ {:file, path} ]}, [header])
 
     Logger.warn "Multipart upload post result: #{inspect result}"
   end
