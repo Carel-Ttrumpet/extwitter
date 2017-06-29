@@ -80,7 +80,7 @@ defmodule ExTwitter.OAuth do
     result = HTTPoison.post!("https://upload.twitter.com/1.1/media/upload.json",
                              {:multipart,
                               [ {:file, path},
-                                {"total_bytes", size},
+                                {"total_bytes", Integer.to_string(size)},
                                 {"command", "INIT"},
                                 {"media_type", content_type},
                                 {"name", String.split(path, "/") |> List.last}]}, [header])
