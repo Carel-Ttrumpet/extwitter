@@ -23,9 +23,9 @@ defmodule ExTwitter.API.Base do
                                         oauth[:access_token_secret])
   end
 
-  def upload_media(media_url) do
+  def upload_media(media_url, path) do
     oauth = ExTwitter.Config.get_tuples |> verify_params
-    response = ExTwitter.OAuth.multipart_upload(media_url,
+    response = ExTwitter.OAuth.multipart_upload(media_url, path,
                                           oauth[:consumer_key],
                                           oauth[:consumer_secret],
                                           oauth[:access_token],

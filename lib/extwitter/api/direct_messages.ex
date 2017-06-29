@@ -39,7 +39,9 @@ defmodule ExTwitter.API.DirectMessages do
 
   def new_direct_message_with_quick_replies(twitter_id, text, media_url, quick_replies \\ []) do
     if media_url != "" do
-      upload_media(media_url)
+      path = download_media media_url
+      upload_media media_url, path
+      File.rm path
     end
 
     message_body = generate_message_body(twitter_id, text)
@@ -68,6 +70,17 @@ defmodule ExTwitter.API.DirectMessages do
         }
       }
     }
+  end
+
+  def download_media(media_url) do
+    %HTTPoison.Response{body: body} = HTTPoison.get!(media_url)
+    path = "/tmp/" <> random_string(8) <> ".png"
+    File.write!(path, body)
+    path
+  end
+
+  def random_string(length) do
+    :crypto.strong_rand_bytes(length) |> Base.url_encode64 |> binary_part(0, length)
   end
 
   def add_media(message, media_url) do
