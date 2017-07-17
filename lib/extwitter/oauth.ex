@@ -95,9 +95,12 @@ defmodule ExTwitter.OAuth do
     name = String.split(path, "/") |> List.last
     Logger.warn "Size: #{inspect size}"
 
-    result = HTTPoison.post!("https://upload.twitter.com/1.1/media/upload.json?",
-      {:multipart, [{"command", "my_value"}, {"media_type", "image/png"}, {"total_bytes", size}]},
-      [auth_header, {"Content-Type", "multipart/form-data"}])
+    form = [{"command", "INIT"}, {"media_type", "image/png"}, {"total_bytes", size}]
+
+    result = HTTPoison.post!(
+      "https://upload.twitter.com/1.1/media/upload.json?command=INIT&total_bytes=#{size}&media_type=image/jpeg",
+      "",
+      [auth_header])
 
     Logger.warn "Multipart INIT upload post result: #{inspect result}"
   end
