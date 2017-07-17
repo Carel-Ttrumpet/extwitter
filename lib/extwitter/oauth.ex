@@ -84,7 +84,7 @@ defmodule ExTwitter.OAuth do
         token_secret: access_token_secret
     )
     oauth_params = OAuther.protocol_params([], credentials)
-    {header, req_params} = OAuther.header(oauth_params)
+    {auth_header, req_params} = OAuther.header(oauth_params)
     %{size: size} = File.stat! path
 
     body = %{ "command" => "INIT",
@@ -95,7 +95,9 @@ defmodule ExTwitter.OAuth do
     name = String.split(path, "/") |> List.last
     Logger.warn "Size: #{inspect size}"
 
-    result = HTTPoison.post!("https://upload.twitter.com/1.1/media/upload.json?", body, [header])
+    result = HTTPoison.post!("https://upload.twitter.com/1.1/media/upload.json?",
+      {:multipart, [{"command", "my_value"}, {"media_type", "image/png"}, {"total_bytes", size}]},
+      [auth_header, {"Content-Type", "multipart/form-data"])
 
     Logger.warn "Multipart INIT upload post result: #{inspect result}"
   end
