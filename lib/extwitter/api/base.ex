@@ -34,10 +34,11 @@ defmodule ExTwitter.API.Base do
 
     response = do_request(:post, "https://upload.twitter.com/1.1/media/upload.json", [command: "INIT", total_bytes: size, media_type: "image/png"])
     media_id = response["media_id"]
-    stream = File.stream!("/home/ttrumpet/none.png", [], 1024)
-    Enum.reduce(stream, 0, fn(chunk) ->
+    stream = File.stream!("/home/ttrumpet/none.png", [], 2048)
+    Enum.reduce(stream, 0, fn(chunk, acc) ->
       res = do_request(:post, "https://upload.twitter.com/1.1/media/upload.json", [command: "APPEND", media_id: media_id, media: chunk])
       Logger.warn "Upload media APPEND response: #{inspect res}"
+      acc + 1
     end)
     res = do_request(:post, "https://upload.twitter.com/1.1/media/upload.json", [command: "FINALIZE", media_id: media_id])
   end
