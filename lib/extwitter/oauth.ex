@@ -91,7 +91,7 @@ defmodule ExTwitter.OAuth do
               "media_type" => "image/png",
               "total_bytes" => size} |> Poison.encode!
 
-    Logger.info "Header: #{inspect header}"
+    Logger.info "Header: #{inspect auth_header}"
     name = String.split(path, "/") |> List.last
     Logger.warn "Size: #{inspect size}"
 
