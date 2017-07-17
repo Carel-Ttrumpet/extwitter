@@ -25,11 +25,15 @@ defmodule ExTwitter.API.Base do
 
   def upload_media(media_url, path, content_type) do
     oauth = ExTwitter.Config.get_tuples |> verify_params
-    response = ExTwitter.OAuth.multipart_upload(media_url, path, content_type,
-                                          oauth[:consumer_key],
-                                          oauth[:consumer_secret],
-                                          oauth[:access_token],
-                                          oauth[:access_token_secret])
+    # response = ExTwitter.OAuth.multipart_upload(media_url, path, content_type,
+    #                                       oauth[:consumer_key],
+    #                                       oauth[:consumer_secret],
+    #                                       oauth[:access_token],
+    #                                       oauth[:access_token_secret])
+    %{size: size} = File.stat! path
+
+    response = do_request(:post, "media/upload.json", [command: "INIT", total_bytes: size, media_type: "image/png"])
+    Logger.warn "Upload media response: #{inspect response}"
   end
 
   def request_with_body(method, path, body \\ []) do

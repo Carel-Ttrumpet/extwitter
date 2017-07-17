@@ -77,32 +77,34 @@ defmodule ExTwitter.OAuth do
   end
 
   def multipart_upload(media_url, path, content_type, consumer_key, consumer_secret, access_token, access_token_secret) do
-    credentials = OAuther.credentials(
-        consumer_key: consumer_key,
-        consumer_secret: consumer_secret,
-        token: access_token,
-        token_secret: access_token_secret
-    )
-    oauth_params = OAuther.protocol_params([], credentials)
-    {auth_header, req_params} = OAuther.header(oauth_params)
-    %{size: size} = File.stat! path
+    # credentials = OAuther.credentials(
+    #     consumer_key: consumer_key,
+    #     consumer_secret: consumer_secret,
+    #     token: access_token,
+    #     token_secret: access_token_secret
+    # )
+    # # signed_params = get_signed_params("post", "https://upload.twitter.com/1.1/media/upload.json", [], consumer_key, consumer_secret, access_token, access_token_secret)
+    # # {auth_header, req_params} = OAuther.header(signed_params)
+    # # oauth_params = OAuther.protocol_params([], credentials)
+    # # {auth_header, req_params} = OAuther.header(oauth_params)
+    # %{size: size} = File.stat! path
 
-    body = %{ "command" => "INIT",
-              "media_type" => "image/png",
-              "total_bytes" => size} |> Poison.encode!
+    # body = %{ "command" => "INIT",
+    #           "media_type" => "image/png",
+    #           "total_bytes" => size} |> Poison.encode!
 
-    Logger.info "Header: #{inspect auth_header}"
-    name = String.split(path, "/") |> List.last
-    Logger.warn "Size: #{inspect size}"
+    # Logger.info "Header: #{inspect auth_header}"
+    # name = String.split(path, "/") |> List.last
+    # Logger.warn "Size: #{inspect size}"
 
-    form = [{"command", "INIT"}, {"media_type", "image/png"}, {"total_bytes", size}]
+    # form = [{"command", "INIT"}, {"media_type", "image/png"}, {"total_bytes", size}]
 
-    result = HTTPoison.post!(
-      "https://upload.twitter.com/1.1/media/upload.json?command=INIT&total_bytes=#{size}&media_type=image/jpeg",
-      "",
-      [auth_header])
+    # result = HTTPoison.post!(
+    #   "https://upload.twitter.com/1.1/media/upload.json?command=INIT&total_bytes=#{size}&media_type=image/jpeg",
+    #   "",
+    #   [auth_header])
 
-    Logger.warn "Multipart INIT upload post result: #{inspect result}"
+    # Logger.warn "Multipart INIT upload post result: #{inspect result}"
   end
 
   def send_httpc_request(method, request, options) do
