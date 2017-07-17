@@ -83,7 +83,7 @@ defmodule ExTwitter.OAuth do
         token: access_token,
         token_secret: access_token_secret
     )
-    oauth_params = protocol_params([], credentials)
+    oauth_params = OAuther.protocol_params([], credentials)
     {header, req_params} = OAuther.header(oauth_params)
     %{size: size} = File.stat! path
 
