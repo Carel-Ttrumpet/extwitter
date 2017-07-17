@@ -36,10 +36,10 @@ defmodule ExTwitter.API.Base do
     Logger.warn "Media INIT response: #{inspect response}"
     media_id = response[:media_id]
     stream = File.stream!(path, [], 2048)
-    Enum.reduce(stream, 0, fn(chunk, acc) ->
-      res = do_request(:post, "https://upload.twitter.com/1.1/media/upload.json", [command: "APPEND", media_id: media_id, media: chunk])
+    Enum.reduce(stream, 0, fn(chunk, seg_index) ->
+      res = do_request(:post, "https://upload.twitter.com/1.1/media/upload.json", [command: "APPEND", media_id: media_id, media: chunk, segment_index: seg_index])
       Logger.warn "Upload media APPEND response: #{inspect res}"
-      acc + 1
+      seg_index + 1
     end)
     res = do_request(:post, "https://upload.twitter.com/1.1/media/upload.json", [command: "FINALIZE", media_id: media_id])
   end
