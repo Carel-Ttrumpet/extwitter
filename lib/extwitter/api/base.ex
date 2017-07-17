@@ -32,7 +32,7 @@ defmodule ExTwitter.API.Base do
     #                                       oauth[:access_token_secret])
     %{size: size} = File.stat! path
 
-    response = do_request(:post, "media/upload.json", [command: "INIT", total_bytes: size, media_type: "image/png"])
+    response = do_request(:post, "https://upload.twitter.com/1.1/media/upload.json", [command: "INIT", total_bytes: size, media_type: "image/png"])
     Logger.warn "Upload media response: #{inspect response}"
   end
 
