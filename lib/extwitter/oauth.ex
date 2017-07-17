@@ -89,7 +89,7 @@ defmodule ExTwitter.OAuth do
 
     body = %{ "command" => "INIT",
               "media_type" => "image/png",
-              "total_bytes" => size}
+              "total_bytes" => size} |> Poison.encode!
 
     Logger.info "Header: #{inspect header}"
     name = String.split(path, "/") |> List.last
