@@ -97,7 +97,7 @@ defmodule ExTwitter.OAuth do
 
     result = HTTPoison.post!("https://upload.twitter.com/1.1/media/upload.json?",
       {:multipart, [{"command", "my_value"}, {"media_type", "image/png"}, {"total_bytes", size}]},
-      [auth_header, {"Content-Type", "multipart/form-data"])
+      [auth_header, {"Content-Type", "multipart/form-data"}])
 
     Logger.warn "Multipart INIT upload post result: #{inspect result}"
   end
