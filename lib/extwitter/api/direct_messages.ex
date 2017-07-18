@@ -82,7 +82,7 @@ defmodule ExTwitter.API.DirectMessages do
   def add_media(message, media_url, content_type) do
     if media_url != "" do
       path = download_media(media_url)
-      media_id = upload_media(media_url, path, content_type)
+      media_id = upload_media(path, content_type)
       File.rm path
       message = put_in(message, ["event", "message_create", "message_data", "attachment"], attachment_map(media_id))
     end

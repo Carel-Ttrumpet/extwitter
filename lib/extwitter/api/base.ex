@@ -23,7 +23,7 @@ defmodule ExTwitter.API.Base do
                                         oauth[:access_token_secret])
   end
 
-  def upload_media(media_url, path, content_type) do
+  def upload_media(path, content_type) do
     media_id = init_media_upload(path, content_type)
     upload_file_chunks(path, media_id)
     finalize_upload(media_id)
