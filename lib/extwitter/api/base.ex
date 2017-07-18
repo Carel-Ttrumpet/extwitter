@@ -32,18 +32,18 @@ defmodule ExTwitter.API.Base do
     #                                       oauth[:access_token_secret])
     %{size: size} = File.stat! path
 
-    response = do_request(:post, "https://requestb.in/17jimdi1", [command: "INIT", total_bytes: size, media_type: content_type])
+    response = do_request(:post, "https://upload.twitter.com/1.1/media/upload.json", [command: "INIT", total_bytes: size, media_type: content_type])
     Logger.warn "Media INIT response: #{inspect response}"
     media_id = response[:media_id]
     stream = File.stream!(path, [], 2048)
     Enum.reduce(stream, 0, fn(chunk, seg_index) ->
       Logger.info "Chunk: #{inspect chunk}"
       Logger.info "Chunk size: #{inspect byte_size(chunk)}"
-      res = do_request(:post, "https://requestb.in/17jimdi1", [command: "APPEND", media_id: media_id, media: chunk, segment_index: seg_index])
+      res = do_request(:post, "https://upload.twitter.com/1.1/media/upload.json", [command: "APPEND", media_id: media_id, media_data: Base.encode64(chunk), segment_index: seg_index])
       Logger.warn "Upload media APPEND response: #{inspect res}"
       seg_index + 1
     end)
-    res = do_request(:post, "https://requestb.in/17jimdi1", [command: "FINALIZE", media_id: media_id])
+    res = do_request(:post, "https://upload.twitter.com/1.1/media/upload.json", [command: "FINALIZE", media_id: media_id])
   end
 
   def request_with_body(method, path, body \\ []) do
@@ -113,7 +113,6 @@ defmodule ExTwitter.API.Base do
     {:ok, {_response, header, body}} = result
     case body do
       [] -> :no_content
-      'ok' -> %{media_id: 123245}
       _ -> verify_response(ExTwitter.JSON.decode!(body), header)
     end
   end
