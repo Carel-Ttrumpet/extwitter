@@ -24,27 +24,28 @@ defmodule ExTwitter.API.Base do
   end
 
   def upload_media(media_url, path, content_type) do
-    oauth = ExTwitter.Config.get_tuples |> verify_params
-    # response = ExTwitter.OAuth.multipart_upload(media_url, path, content_type,
-    #                                       oauth[:consumer_key],
-    #                                       oauth[:consumer_secret],
-    #                                       oauth[:access_token],
-    #                                       oauth[:access_token_secret])
-    %{size: size} = File.stat! path
+    media_id = init_media_upload(path, content_type)
+    upload_file_chunks(path, media_id)
+    finalize_upload(media_id)
+    media_id
+  end
 
-    response = do_request(:post, "https://upload.twitter.com/1.1/media/upload.json", [command: "INIT", total_bytes: size, media_type: content_type])
-    # Logger.warn "Media INIT response: #{inspect response}"
-    media_id = response[:media_id]
+  def init_media_upload(path, content_type) do
+    %{size: size} = File.stat! path
+    response = do_request(:post, media_upload_url(), [command: "INIT", total_bytes: size, media_type: content_type])
+    response.media_id
+  end
+
+  def upload_file_chunks(path, media_id) do
     stream = File.stream!(path, [], 65536)
     Enum.reduce(stream, 0, fn(chunk, seg_index) ->
-      # Logger.info "Chunk: #{inspect chunk}"
-      Logger.info "Chunk size: #{inspect byte_size(chunk)}"
-      res = do_request(:post, "https://upload.twitter.com/1.1/media/upload.json", [command: "APPEND", media_id: media_id, media_data: Base.encode64(chunk), segment_index: seg_index])
-      # Logger.warn "Upload media APPEND response: #{inspect res}"
+      res = do_request(:post, media_upload_url(), [command: "APPEND", media_id: media_id, media_data: Base.encode64(chunk), segment_index: seg_index])
       seg_index + 1
     end)
-    res = do_request(:post, "https://upload.twitter.com/1.1/media/upload.json", [command: "FINALIZE", media_id: media_id])
-    media_id
+  end
+
+  def finalize_upload(media_id) do
+    do_request(:post, media_upload_url(), [command: "FINALIZE", media_id: media_id])
   end
 
   def request_with_body(method, path, body \\ []) do
@@ -96,6 +97,10 @@ defmodule ExTwitter.API.Base do
       true ->
         [screen_name: id]
     end
+  end
+
+  def media_upload_url do
+    "https://upload.twitter.com/1.1/media/upload.json"
   end
 
   def ton_request_url(path) do

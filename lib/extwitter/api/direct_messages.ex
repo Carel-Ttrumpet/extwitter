@@ -44,7 +44,6 @@ defmodule ExTwitter.API.DirectMessages do
                     |> add_quick_replies(quick_replies)
                     |> add_media(media_url, content_type)
                     |> Poison.encode!
-    Logger.warn "Posting message body: #{inspect message_body}"
     request_with_body(:post, "1.1/direct_messages/events/new.json", message_body)
   end
 
@@ -71,7 +70,7 @@ defmodule ExTwitter.API.DirectMessages do
   def download_media(media_url) do
     Logger.warn "Media url in direct messages: #{inspect media_url}"
     %HTTPoison.Response{body: body} = HTTPoison.get!(media_url)
-    path = "/tmp/" <> random_string(8) <> ".png"
+    path = "/tmp/" <> random_string(8)
     File.write!(path, body)
     path
   end
