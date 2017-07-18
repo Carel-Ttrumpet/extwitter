@@ -361,6 +361,7 @@ defmodule ExTwitter do
   # https://dev.twitter.com/rest/reference/get/statuses/oembed
 
   @doc """
+    Chunk upload media and return media_id
     POST media/upload (INIT)
     POST media/upload (APPEND)
     POST media/upload (FINALIZE)
@@ -368,7 +369,7 @@ defmodule ExTwitter do
     ## Examples
     media_id = upload_media("/tmp/image.png", "image/png")
   """
-  @spec upload_media(String.t, String.t) :: integer()
+  @spec upload_media(String.t, String.t, integer()) :: integer()
   defdelegate upload_media(path, content_type, chunk_size \\ 65536), to: ExTwitter.API.Base
 
   @doc """
