@@ -109,7 +109,7 @@ defmodule ExTwitter.OAuth do
 
   def send_httpc_request(method, request, options) do
     result = :httpc.request(method, request, [{:autoredirect, false}] ++ proxy_option(), options)
-    Logger.warn "Twitter result: #{inspect result}"
+    # Logger.warn "Twitter result: #{inspect result}"
     result
   end
 
