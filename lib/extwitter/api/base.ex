@@ -37,6 +37,7 @@ defmodule ExTwitter.API.Base do
     media_id = response[:media_id]
     stream = File.stream!(path, [], 2048)
     Enum.reduce(stream, 0, fn(chunk, seg_index) ->
+      Logger.info "Chunk: #{inspect chunk}"
       res = do_request(:post, "https://upload.twitter.com/1.1/media/upload.json", [command: "APPEND", media_id: media_id, media: chunk, segment_index: seg_index])
       Logger.warn "Upload media APPEND response: #{inspect res}"
       seg_index + 1
