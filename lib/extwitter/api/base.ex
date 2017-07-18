@@ -113,6 +113,7 @@ defmodule ExTwitter.API.Base do
     {:ok, {_response, header, body}} = result
     case body do
       [] -> :no_content
+      'ok' -> :no_content
       _ -> verify_response(ExTwitter.JSON.decode!(body), header)
     end
   end
