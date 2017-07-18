@@ -361,6 +361,17 @@ defmodule ExTwitter do
   # https://dev.twitter.com/rest/reference/get/statuses/oembed
 
   @doc """
+    POST media/upload (INIT)
+    POST media/upload (APPEND)
+    POST media/upload (FINALIZE)
+
+    ## Examples
+    media_id = upload_media("/tmp/image.png", "image/png")
+  """
+  @spec upload_media(String.t, String.t) :: integer()
+  defdelegate upload_media(path, content_type, chunk_size \\ 65536), to: ExTwitter.API.Base
+
+  @doc """
   GET statuses/retweeters/ids
 
   ## Examples

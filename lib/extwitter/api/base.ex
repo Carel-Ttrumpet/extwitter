@@ -23,29 +23,33 @@ defmodule ExTwitter.API.Base do
                                         oauth[:access_token_secret])
   end
 
-  def upload_media(path, content_type) do
+  def upload_media(path, content_type, chunk_size \\ 65536) do
     media_id = init_media_upload(path, content_type)
-    upload_file_chunks(path, media_id)
+    upload_file_chunks(path, media_id, chunk_size)
     finalize_upload(media_id)
     media_id
   end
 
   def init_media_upload(path, content_type) do
     %{size: size} = File.stat! path
-    response = do_request(:post, media_upload_url(), [command: "INIT", total_bytes: size, media_type: content_type])
+    request_params = [command: "INIT", total_bytes: size, media_type: content_type]
+    response = do_request(:post, media_upload_url(), request_params)
     response.media_id
   end
 
-  def upload_file_chunks(path, media_id) do
-    stream = File.stream!(path, [], 65536)
-    Enum.reduce(stream, 0, fn(chunk, seg_index) ->
-      res = do_request(:post, media_upload_url(), [command: "APPEND", media_id: media_id, media_data: Base.encode64(chunk), segment_index: seg_index])
+  def upload_file_chunks(path, media_id, chunk_size) do
+    stream = File.stream!(path, [], chunk_size)
+    initial_segment_index = 0
+    Enum.reduce(stream, initial_segment_index, fn(chunk, seg_index) ->
+      request_params = [command: "APPEND", media_id: media_id, media_data: Base.encode64(chunk), segment_index: seg_index]
+      do_request(:post, media_upload_url(), request_params)
       seg_index + 1
     end)
   end
 
   def finalize_upload(media_id) do
-    do_request(:post, media_upload_url(), [command: "FINALIZE", media_id: media_id])
+    request_params = [command: "FINALIZE", media_id: media_id]
+    do_request(:post, media_upload_url(), request_params)
   end
 
   def request_with_body(method, path, body \\ []) do
