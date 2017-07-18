@@ -44,6 +44,7 @@ defmodule ExTwitter.API.Base do
       seg_index + 1
     end)
     res = do_request(:post, "https://upload.twitter.com/1.1/media/upload.json", [command: "FINALIZE", media_id: media_id])
+    media_id
   end
 
   def request_with_body(method, path, body \\ []) do

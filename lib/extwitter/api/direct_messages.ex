@@ -38,15 +38,11 @@ defmodule ExTwitter.API.DirectMessages do
   end
 
   def new_direct_message_with_quick_replies(twitter_id, text, content_type, media_url, quick_replies \\ []) do
-    if media_url != "" do
-      path = download_media(media_url)
-      upload_media(media_url, path, content_type)
-      File.rm path
-    end
+
 
     message_body = generate_message_body(twitter_id, text)
                     |> add_quick_replies(quick_replies)
-                    |> add_media(media_url)
+                    |> add_media(media_url, content_type)
                     |> Poison.encode!
     Logger.warn "Posting message body: #{inspect message_body}"
     request_with_body(:post, "1.1/direct_messages/events/new.json", message_body)
@@ -84,8 +80,23 @@ defmodule ExTwitter.API.DirectMessages do
     :crypto.strong_rand_bytes(length) |> Base.url_encode64 |> binary_part(0, length)
   end
 
-  def add_media(message, media_url) do
+  def add_media(message, media_url, content_type) do
+    if media_url != "" do
+      path = download_media(media_url)
+      media_id = upload_media(media_url, path, content_type)
+      File.rm path
+      message = put_in(message, ["event", "message_create", "message_data", "attachment"], attachment_map(media_id))
+    end
     message
+  end
+
+  def attachment_map(media_id) do
+    %{
+        "type" => "media",
+        "media" => %{
+          "id" => media_id
+        }
+    }
   end
 
   def add_quick_replies(message, quick_replies) do
