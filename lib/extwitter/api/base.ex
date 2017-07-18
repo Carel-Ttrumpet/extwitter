@@ -35,7 +35,7 @@ defmodule ExTwitter.API.Base do
     response = do_request(:post, "https://upload.twitter.com/1.1/media/upload.json", [command: "INIT", total_bytes: size, media_type: content_type])
     # Logger.warn "Media INIT response: #{inspect response}"
     media_id = response[:media_id]
-    stream = File.stream!(path, [], 8192)
+    stream = File.stream!(path, [], 16384)
     Enum.reduce(stream, 0, fn(chunk, seg_index) ->
       # Logger.info "Chunk: #{inspect chunk}"
       Logger.info "Chunk size: #{inspect byte_size(chunk)}"
