@@ -4,7 +4,7 @@ defmodule ExTwitter.Mixfile do
   def project do
     [ app: :extwitter,
       version: "0.8.5",
-      elixir: ">= 1.0.0",
+      elixir: ">= 1.4.0",
       deps: deps(),
       description: description(),
       package: package(),
@@ -35,10 +35,10 @@ defmodule ExTwitter.Mixfile do
     [
       {:oauther, "~> 1.1"},
       {:poison, "~> 3.0"},
-      {:httpoison, "~> 0.11.1"},
+      {:httpoison, "~> 0.11.2"},
       {:exvcr, "~> 0.8", only: :test},
       {:excoveralls, "~> 0.6", only: :test},
-      {:meck, "~> 0.8.2", only: [:dev, :test]},
+      {:meck, "~> 0.8.9", only: [:dev, :test]},
       {:mock, "~> 0.2", only: [:dev, :test]},
       {:ex_doc, ">= 0.0.0", only: [:dev, :docs]},
       {:inch_ex, "~> 0.5", only: :docs},
