@@ -35,9 +35,9 @@ defmodule ExTwitter.Mixfile do
     [
       {:oauther, "~> 1.1"},
       {:poison, "~> 3.0"},
-      {:httpoison, "~> 0.11.2"},
-      {:exvcr, "~> 0.8", only: :test},
-      {:excoveralls, "~> 0.6", only: :test},
+      {:httpoison, "~> 1.5.1"},
+      {:exvcr, "~> 0.10.3", only: :test},
+      {:excoveralls, "~> 0.11.2", only: :test},
       {:meck, "~> 0.8.9", only: [:dev, :test]},
       {:mock, "~> 0.2", only: [:dev, :test]},
       {:ex_doc, ">= 0.0.0", only: [:dev, :docs]},
