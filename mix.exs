@@ -3,11 +3,11 @@ defmodule ExTwitter.Mixfile do
 
   def project do
     [ app: :extwitter,
-      version: "0.7.2",
+      version: "0.8.5",
       elixir: ">= 1.0.0",
-      deps: deps,
-      description: description,
-      package: package,
+      deps: deps(),
+      description: description(),
+      package: package(),
       test_coverage: [tool: ExCoveralls],
       preferred_cli_env: cli_env_for(:test, [
         "coveralls", "coveralls.detail", "coveralls.post",
@@ -23,7 +23,7 @@ defmodule ExTwitter.Mixfile do
   # Configuration for the OTP application
   def application do
     [ mod: { ExTwitter, [] },
-      applications: [:inets, :ssl, :crypto]]
+      applications: [:inets, :ssl, :crypto, :httpoison]]
   end
 
   # Returns the list of dependencies in the format:
@@ -33,16 +33,16 @@ defmodule ExTwitter.Mixfile do
   # { :barbat, "~> 0.1", github: "elixir-lang/barbat" }
   def deps do
     [
-      {:oauth, github: "tim/erlang-oauth"},
-      {:poison, "~> 2.0"},
+      {:oauther, "~> 1.1"},
+      {:poison, "~> 3.0"},
+      {:httpoison, "~> 0.11.1"},
       {:exvcr, "~> 0.8", only: :test},
-      {:excoveralls, "~> 0.5", only: :test},
+      {:excoveralls, "~> 0.6", only: :test},
       {:meck, "~> 0.8.2", only: [:dev, :test]},
-      {:mock, github: "jjh42/mock", only: [:dev, :test]},
-      {:ex_doc, "~> 0.11", only: :docs},
-      {:earmark, "~> 0.1", only: :docs},
-      {:inch_ex, "~> 0.5.1", only: :docs},
-      {:benchfella, github: "alco/benchfella", only: :dev}
+      {:mock, "~> 0.2", only: [:dev, :test]},
+      {:ex_doc, ">= 0.0.0", only: [:dev, :docs]},
+      {:inch_ex, "~> 0.5", only: :docs},
+      {:benchfella, "~> 0.3.3", only: :dev}
     ]
   end
 

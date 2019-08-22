@@ -1,4 +1,5 @@
 defmodule ExTwitter.API.Base do
+  require Logger
   @moduledoc """
   Provides basic and common functionalities for Twitter API.
   """
@@ -13,6 +14,48 @@ defmodule ExTwitter.API.Base do
     do_request(method, request_url(path), params)
   end
 
+  def ton_request(method, path, params \\ []) do
+    oauth = ExTwitter.Config.get_tuples |> verify_params
+    response = ExTwitter.OAuth.request( method, ton_request_url(path), params,
+                                        oauth[:consumer_key],
+                                        oauth[:consumer_secret],
+                                        oauth[:access_token],
+                                        oauth[:access_token_secret])
+  end
+
+  def upload_media(path, content_type, chunk_size \\ 65536) do
+    media_id = init_media_upload(path, content_type)
+    upload_file_chunks(path, media_id, chunk_size)
+    finalize_upload(media_id)
+    media_id
+  end
+
+  def init_media_upload(path, content_type) do
+    %{size: size} = File.stat! path
+    request_params = [command: "INIT", total_bytes: size, media_type: content_type]
+    response = do_request(:post, media_upload_url(), request_params)
+    response.media_id
+  end
+
+  def upload_file_chunks(path, media_id, chunk_size) do
+    stream = File.stream!(path, [], chunk_size)
+    initial_segment_index = 0
+    Enum.reduce(stream, initial_segment_index, fn(chunk, seg_index) ->
+      request_params = [command: "APPEND", media_id: media_id, media_data: Base.encode64(chunk), segment_index: seg_index]
+      do_request(:post, media_upload_url(), request_params)
+      seg_index + 1
+    end)
+  end
+
+  def finalize_upload(media_id) do
+    request_params = [command: "FINALIZE", media_id: media_id]
+    do_request(:post, media_upload_url(), request_params)
+  end
+
+  def request_with_body(method, path, body \\ []) do
+    do_request_with_body(method, request_url(path), body)
+  end
+
   @doc """
   Send request to the upload.twitter.com server.
   """
@@ -22,10 +65,23 @@ defmodule ExTwitter.API.Base do
 
   defp do_request(method, url, params) do
     oauth = ExTwitter.Config.get_tuples |> verify_params
-    consumer = {oauth[:consumer_key], oauth[:consumer_secret], :hmac_sha1}
-    token = oauth[:access_token]
-    secret = oauth[:access_token_secret]
-    case ExTwitter.OAuth.request(method, url, params, consumer, token, secret) do
+    # Logger.warn "Twitter request: #{inspect method}, url: #{inspect url}, params: #{inspect params}"
+    response = ExTwitter.OAuth.request(method, url, params,
+      oauth[:consumer_key], oauth[:consumer_secret], oauth[:access_token], oauth[:access_token_secret])
+    IO.inspect response
+    case response do
+      {:error, reason} -> raise(ExTwitter.ConnectionError, reason: reason)
+      r -> r |> parse_result
+    end
+  end
+
+  defp do_request_with_body(method, url, body) do
+    oauth = ExTwitter.Config.get_tuples |> verify_params
+    Logger.warn "Twitter request with body: #{inspect method}, url: #{inspect url}, params: #{inspect body}"
+    response = ExTwitter.OAuth.request_with_body(method, url, body,
+      oauth[:consumer_key], oauth[:consumer_secret], oauth[:access_token], oauth[:access_token_secret])
+    IO.inspect response
+    case response do
       {:error, reason} -> raise(ExTwitter.ConnectionError, reason: reason)
       r -> r |> parse_result
     end
@@ -47,17 +103,28 @@ defmodule ExTwitter.API.Base do
     end
   end
 
+  def media_upload_url do
+    "https://upload.twitter.com/1.1/media/upload.json"
+  end
+
+  def ton_request_url(path) do
+    "https://ton.twitter.com/#{path}"
+  end
+
   def request_url(path) do
-    "https://api.twitter.com/#{path}" |> to_char_list
+    "https://api.twitter.com/#{path}"
   end
 
   defp upload_url(path) do
-    "https://upload.twitter.com/#{path}" |> to_char_list
+    "https://upload.twitter.com/#{path}"
   end
 
   def parse_result(result) do
     {:ok, {_response, header, body}} = result
-    verify_response(ExTwitter.JSON.decode!(body), header)
+    case body do
+      [] -> :no_content
+      _ -> verify_response(ExTwitter.JSON.decode!(body), header)
+    end
   end
 
   defp verify_response(body, header) do
@@ -80,11 +147,11 @@ defmodule ExTwitter.API.Base do
     case code do
       @error_code_rate_limit_exceeded ->
         reset_at = fetch_rate_limit_reset(header)
-        reset_in = Enum.max([reset_at - now, 0])
+        reset_in = Enum.max([reset_at - now(), 0])
         raise ExTwitter.RateLimitExceededError,
           code: code, message: message, reset_at: reset_at, reset_in: reset_in
-      _  ->
-        raise ExTwitter.Error, code: code, message: message
+        _  ->
+          raise ExTwitter.Error, code: code, message: message
     end
   end
 

@@ -14,7 +14,7 @@ defmodule ExTwitter.ConfigTest do
   end
 
   test "oauth initialization (process)" do
-    test = self
+    test = self()
     test_fun = fn(test_pid, config) ->
       spawn(fn() ->
         ExTwitter.Config.set(:process, config)
@@ -31,7 +31,7 @@ defmodule ExTwitter.ConfigTest do
 
   test "get_tuples returns list of tuples" do
     ExTwitter.Config.set([conf: "value"])
-    assert ExTwitter.Config.get_tuples == [{:conf, 'value'}]
+    assert ExTwitter.Config.get_tuples == [{:conf, "value"}]
   end
 
   test "get_tuples returns empty list when config is not set" do

@@ -1,3 +1,51 @@
+0.8.5
+------
+#### Changes
+* Update dependency.
+  - Bumped poison dep to 3.0 (#80).
+
+0.8.4
+------
+#### Changes
+* Fix for crash when calling user_lookup on more than 2 twitter IDs (#78).
+
+0.8.3
+------
+#### Enhancements
+* Add support for blocking/unblocking users (#71).
+
+0.8.2
+------
+#### Enhancements
+* Add support for users/profile_banner (#70).
+
+#### Changes
+* Update dependencies.
+
+0.8.1
+------
+#### Changes
+* Fix option for account/verify_credentials (#68).
+
+0.8.0
+------
+#### Changes
+* OAuth dependency library is updated (#63).
+    - Adding `{:oauth, github: "tim/erlang-oauth"}` in mix.exs becomes not required.
+
+* Configurations for proxy is simplified.
+    - https://github.com/parroty/extwitter#proxy
+
+* Fix [mix bench] task error and library updates.
+    - Update benchfella and remove some warning notes about setup/teardown.
+
+0.7.3
+------
+#### Enhancements
+* Allow for looking up multiple users with a list (#61).
+* Add new Tweet fields for extended tweets (#57).
+* Support for direct messages in streaming API (#60).
+
 0.7.2
 ------
 #### Changes

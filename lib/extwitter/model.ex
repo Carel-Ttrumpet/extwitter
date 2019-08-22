@@ -6,17 +6,16 @@ defmodule ExTwitter.Model.Tweet do
   https://dev.twitter.com/overview/api/tweets
   """
   defstruct contributors: nil, coordinates: nil, created_at: nil,
-    current_user_retweet: nil, entities: nil, extended_entities: nil, favorite_count: nil,
-    favorited: nil, filter_level: nil, geo: nil, id: nil, id_str: nil,
+    current_user_retweet: nil, display_text_range: nil, entities: nil,
+    extended_entities: nil, favorite_count: nil, favorited: nil, filter_level:
+    nil, full_text: nil, geo: nil, id: nil, id_str: nil,
     in_reply_to_screen_name: nil, in_reply_to_status_id: nil,
     in_reply_to_status_id_str: nil, in_reply_to_user_id: nil,
-    in_reply_to_user_id_str: nil, lang: nil, place: nil,
-    possibly_sensitive: nil, quoted_status_id: nil,
-    quoted_status_id_str: nil, quoted_status: nil, scopes: nil,
-    retweet_count: nil, retweeted: nil, retweeted_status: nil,
-    source: nil, text: nil, truncated: nil, user: nil,
-    withheld_copyright: nil, withheld_in_countries: nil,
-    withheld_scope: nil
+    in_reply_to_user_id_str: nil, lang: nil, place: nil, possibly_sensitive:
+    nil, quoted_status_id: nil, quoted_status_id_str: nil, quoted_status: nil,
+    scopes: nil, retweet_count: nil, retweeted: nil, retweeted_status: nil,
+    source: nil, text: nil, truncated: nil, user: nil, withheld_copyright: nil,
+    withheld_in_countries: nil, withheld_scope: nil
   @type t :: %__MODULE__{}
 end
 
@@ -49,7 +48,19 @@ defmodule ExTwitter.Model.User do
     protected: nil, screen_name: nil, show_all_inline_media: nil,
     status: nil, statuses_count: nil, time_zone: nil, url: nil,
     utc_offset: nil, verified: nil, withheld_in_countries: nil,
-    withheld_scope: nil
+    withheld_scope: nil, email: nil
+
+  @type t :: %__MODULE__{}
+end
+
+defmodule ExTwitter.Model.ProfileBanner do
+  @moduledoc """
+  Profile Banner object.
+
+  ## Reference
+  https://dev.twitter.com/rest/reference/get/users/profile_banner
+  """
+  defstruct sizes: nil
 
   @type t :: %__MODULE__{}
 end

@@ -144,7 +144,7 @@ defmodule ExTwitterTest do
     end
   end
 
-  test "destroy a direct message options" do
+  test "destroy a direct message with options" do
     use_cassette "destroy_direct_message" do
       direct_message = ExTwitter.destroy_direct_message(615025281712025603, include_entities: false)
       assert direct_message.text =~ ~r/In case there are any problems with locating the place/
@@ -353,6 +353,24 @@ defmodule ExTwitterTest do
     end
   end
 
+  test "block and unblock user by screen_name" do
+    use_cassette "blocks" do
+      user1 = ExTwitter.block("twitter")
+      assert user1.screen_name == "Twitter"
+      user2 = ExTwitter.unblock("twitter")
+      assert user2.screen_name == "Twitter"
+    end
+  end
+
+  test "block and unblock user by user_id" do
+    use_cassette "blocks" do
+      user1 = ExTwitter.block(783214)
+      assert user1.screen_name == "Twitter"
+      user2 = ExTwitter.unblock(783214)
+      assert user2.screen_name == "Twitter"
+    end
+  end
+
   test "lookup user by screen_name" do
     use_cassette "lookup_user" do
       users = ExTwitter.user_lookup("twitter")
@@ -366,6 +384,74 @@ defmodule ExTwitterTest do
       users = ExTwitter.user_lookup(783214)
       assert Enum.count(users) == 1
       assert Enum.at(users, 0).screen_name == "twitter"
+    end
+  end
+
+  test "lookup user by screen_name using options" do
+    use_cassette "lookup_user" do
+      users = ExTwitter.user_lookup(screen_name: "twitter")
+      assert Enum.count(users) == 1
+      assert Enum.at(users, 0).screen_name == "twitter"
+    end
+  end
+
+  test "lookup users by user_id" do
+    use_cassette "lookup_users" do
+      users = ExTwitter.user_lookup([783214, 10230812, 507309896])
+      assert Enum.count(users) == 3
+      assert Enum.at(users, 0).screen_name == "Twitter"
+      assert Enum.at(users, 1).screen_name == "josevalim"
+      assert Enum.at(users, 2).screen_name == "elixirlang"
+    end
+  end
+
+  test "lookup users by screen_name" do
+    use_cassette "lookup_users" do
+      users = ExTwitter.user_lookup(["twitter", "josevalim", "elixirlang"])
+      assert Enum.count(users) == 3
+      assert Enum.at(users, 0).screen_name == "Twitter"
+      assert Enum.at(users, 1).screen_name == "josevalim"
+    end
+  end
+
+  test "lookup users by screen_name along with options" do
+    use_cassette "lookup_users" do
+      users = ExTwitter.user_lookup(["twitter", "josevalim", "elixirlang"], include_entities: false)
+      assert Enum.count(users) == 3
+      assert Enum.at(users, 0).screen_name == "Twitter"
+      assert Enum.at(users, 1).screen_name == "josevalim"
+    end
+  end
+
+  test "lookup users by user_id along with options" do
+    use_cassette "lookup_users" do
+      users = ExTwitter.user_lookup([783214, 10230812, 507309896], include_entities: false)
+      assert Enum.count(users) == 3
+      assert Enum.at(users, 0).screen_name == "Twitter"
+      assert Enum.at(users, 1).screen_name == "josevalim"
+    end
+  end
+
+  test "lookup users with empty list returns nil" do
+    use_cassette "lookup_users" do
+      users = ExTwitter.user_lookup([], include_entities: false)
+      assert length(users) == 0
+    end
+  end
+
+  test "get profile banners by user_id" do
+    use_cassette "user_profile_banner" do
+      profile_banner = ExTwitter.user_profile_banner(783214)
+      assert profile_banner.sizes.web.h > 0
+      assert profile_banner.sizes.web.w > 0
+    end
+  end
+
+  test "get profile banners by screen_name" do
+    use_cassette "user_profile_banner" do
+      profile_banner = ExTwitter.user_profile_banner("twitter")
+      assert profile_banner.sizes.web.h > 0
+      assert profile_banner.sizes.web.w > 0
     end
   end
 

@@ -111,6 +111,19 @@ defmodule ExTwitter.Parser do
   end
 
   @doc """
+  Parse batch user/lookup request parameters for the API.
+  """
+  def parse_batch_user_lookup_params(options) do
+    Enum.map(options, fn({k,v}) ->
+      if is_list(v) do
+        {to_string(k), Enum.join(v, ",")}
+      else
+        {to_string(k), to_string(v)}
+      end
+    end)
+  end
+
+  @doc """
   Parse request_token response
   """
   def parse_request_token(object) do
@@ -122,5 +135,12 @@ defmodule ExTwitter.Parser do
   """
   def parse_access_token(object) do
     struct(ExTwitter.Model.AccessToken, object)
+  end
+
+  @doc """
+  Parse user profile banner from the API response json.
+  """
+  def parse_profile_banner(object) do
+    struct(ExTwitter.Model.ProfileBanner, object)
   end
 end

@@ -27,15 +27,15 @@ defmodule ExTwitterStreamTest do
     :ok
   end
 
-  test_with_mock "gets Twitter sample stream", :oauth,
-    [get: fn(_url, _params, _consumer, _access_token, _access_token_secret, _options) ->
-      request_id = make_ref
-      TestHelper.TestStore.set({self, request_id})
+  test_with_mock "gets Twitter sample stream", ExTwitter.OAuth,
+    [request_async: fn(_method, _url, _params, _consumer_key, _consumer_secret, _access_token, _access_token_secret) ->
+      request_id = make_ref()
+      TestHelper.TestStore.set({self(), request_id})
       {:ok, request_id}
     end] do
 
     # Process stream on different process.
-    parent = self
+    parent = self()
     spawn(fn() ->
       stream = ExTwitter.stream_sample
       tweet = Enum.take(stream, 1) |> List.first
@@ -43,7 +43,7 @@ defmodule ExTwitterStreamTest do
     end)
 
     # Send mock data after short wait.
-    wait_async_request_initialization
+    wait_async_request_initialization()
     send_mock_data(TestHelper.TestStore.get, @mock_tweet_json)
 
     # Verify result.
@@ -53,15 +53,15 @@ defmodule ExTwitterStreamTest do
     end
   end
 
-  test_with_mock "gets Twitter filter stream", :oauth,
-    [post: fn(_url, _params, _consumer, _access_token, _access_token_secret, _options) ->
-      request_id = make_ref
-      TestHelper.TestStore.set({self, request_id})
+  test_with_mock "gets Twitter filter stream", ExTwitter.OAuth,
+    [request_async: fn(_method, _url, _params, _consumer_key, _consumer_secret, _access_token, _access_token_secret) ->
+      request_id = make_ref()
+      TestHelper.TestStore.set({self(), request_id})
       {:ok, request_id}
     end] do
 
     # Process stream on different process.
-    parent = self
+    parent = self()
     spawn(fn() ->
       stream = ExTwitter.stream_filter(follow: "twitter")
       tweet = Enum.take(stream, 1) |> List.first
@@ -69,7 +69,7 @@ defmodule ExTwitterStreamTest do
     end)
 
     # Send mock data after short wait.
-    wait_async_request_initialization
+    wait_async_request_initialization()
     send_mock_data(TestHelper.TestStore.get, @mock_tweet_json)
 
     # Verify result.
@@ -79,15 +79,15 @@ defmodule ExTwitterStreamTest do
     end
   end
 
-  test_with_mock "gets twitter stream messages", :oauth,
-      [post: fn(_url, _params, _consumer, _access_token, _access_token_secret, _options) ->
-      request_id = make_ref
-      TestHelper.TestStore.set({self, request_id})
+  test_with_mock "gets twitter stream messages", ExTwitter.OAuth,
+      [request_async: fn(_method, _url, _params, _consumer_key, _consumer_secret, _access_token, _access_token_secret) ->
+      request_id = make_ref()
+      TestHelper.TestStore.set({self(), request_id})
       {:ok, request_id}
     end] do
 
     # Process stream on different process.
-    parent = self
+    parent = self()
     spawn(fn() ->
       stream = ExTwitter.stream_filter(track: "twitter", receive_messages: true)
       tweets = Enum.take(stream, 3)
@@ -95,7 +95,7 @@ defmodule ExTwitterStreamTest do
     end)
 
     # Send mock data after short wait.
-    wait_async_request_initialization
+    wait_async_request_initialization()
     send_mock_data(TestHelper.TestStore.get, @mock_limit_json)
     send_mock_data(TestHelper.TestStore.get, @mock_deleted_tweet)
     send_mock_data(TestHelper.TestStore.get, @mock_stall_warning)
@@ -111,7 +111,7 @@ defmodule ExTwitterStreamTest do
   end
 
   test "stream control succeeds" do
-    parent = self
+    parent = self()
     pid = spawn(fn ->
       receive do
         {:control_stop, _pid} -> send parent, :ok
@@ -124,7 +124,7 @@ defmodule ExTwitterStreamTest do
   end
 
   test "stream control timeouts after 10 milliseconds" do
-    assert ExTwitter.stream_control(self, :stop, timeout: 10) == :timeout
+    assert ExTwitter.stream_control(self(), :stop, timeout: 10) == :timeout
   end
 
   defp wait_async_request_initialization do
